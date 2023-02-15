@@ -1,0 +1,43 @@
+ bool solve(int V,vector<int>adj[],vector<bool> &vis,vector<bool> &stack)
+    {
+        if(!vis[V])
+        {
+            vis[V]=true;
+            stack[V]=true;
+            for(auto i:adj[V])
+            {
+                if(!vis[i])
+                {
+                    if(solve(i,adj,vis,stack)==true)
+                    {
+                        return true;
+                    }
+                }
+                else if(stack[i]==true &&vis[i]==true)
+                {
+                    return true;
+                }
+                
+            }
+        }
+        stack[V]=false;
+        return false;
+    }
+    bool isCyclic(int V, vector<int> adj[]) {
+        // code here
+        vector<bool>vis(V,false);
+        vector<bool>stack(V,false);
+        for(int i=0;i<V;i++)
+        {
+            if(!vis[i])
+            {
+                bool ans=solve(i,adj,vis,stack);
+                if(ans==1)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+};
