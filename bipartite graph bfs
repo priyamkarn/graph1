@@ -1,0 +1,34 @@
+such that no two adjacent vertices have the same color
+
+bool checkBip(int src, vector<int> adj[], vector<int> &color){
+	    queue<int> q;
+	    
+	    color[src] = 1;
+	    q.push(src);
+	    
+	    while(!q.empty()){
+	       int node = q.front(), curColor = color[node];
+	       q.pop();
+	       for(int child : adj[node]){
+	           if(color[child] != -1){
+	               if(color[child] == curColor) return false;
+	           }
+	           else {
+	               color[child] = 1 - curColor;
+	               q.push(child);
+	           }
+	       }
+	    }
+	    
+	    return true;
+    }
+public:
+	bool isBipartite(int V, vector<int> adj[]){
+	    vector<int> color(V, -1);
+	    for(int node = 0; node < V; node++){
+	        if(color[node] == -1 && !checkBip(node, adj, color)) return false;
+	    }
+	    
+	    return true;
+	}
+};
