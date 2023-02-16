@@ -1,0 +1,75 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+const int MAXN = 100005;
+
+vector<int> adj[MAXN];
+bool visited[MAXN];
+int parent[MAXN];
+int discovery[MAXN];
+int low[MAXN];
+int time = 0;
+
+void tarjan_bridge(int u) {
+    discovery[u] = time;
+    low[u] = time;
+    time++;
+    visited[u] = true;
+
+    for (int v : adj[u]) {
+        if (!visited[v]) {
+            parent[v] = u;
+            tarjan_bridge(v);
+            low[u] = min(low[u], low[v]);
+            if (low[v] > discovery[u]) {
+                cout << u << " " << v << endl;
+            }
+        } else if (parent[u] != v) {
+            low[u] = min(low[u], discovery[v]);
+        }
+    }
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+
+    for (int i = 1; i <= n; i++) {
+        if (!visited[i]) {
+            tarjan_bridge(i);
+        }
+    }
+
+    return 0;
+}
+
+The discovery time is the time at which a node is first visited during a depth-first search of the graph.
+It is used to keep track of the order in which nodes are visited, and to determine the existence of back edges in the graph. 
+A back edge is an edge from a node to an ancestor in its DFS tree,
+and its presence indicates the existence of a cycle in the graph.
+
+The low time of a node is the smallest discovery time of any node that can be reached from the current node by
+following a path of tree edges and at most one back edge. It represents the earliest reachable ancestor of the node, 
+and is used to identify the presence of bridges in the graph.
+
+During the DFS of the graph, the discovery and low times of each node are updated as follows:
+
+When a node is first visited, its discovery time and low time are both set to the current time.
+When a node u visits a neighbor v that has not been visited before, u becomes the parent of v, and the tarjan_bridge(v) function is called recursively. 
+After the recursive call, the low time of u is updated with the minimum of its current low time and the low time of v.
+If a neighbor v of u has already been visited, and is not the parent of u, then there is a back edge from u to v, 
+and the low time of u is updated with the discovery time of v.
+By comparing the discovery time and low time of each node and its neighbors, the algorithm can determine whether an edge is a bridge or not. 
+If the low time of a neighbor v is greater than the discovery time of the current node u, then there is no back edge from v to any ancestor of u, 
+and the edge (u, v) is a bridge. Otherwise, if the low time of v is less than or equal to the discovery time of u,
+then the edge (u, v) is not a bridge, as it is part of a cycle in the graph.
+"low time" of a node tells us how far "back" we can reach from that node without using any back edges.
