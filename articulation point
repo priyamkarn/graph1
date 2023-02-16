@@ -1,0 +1,89 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+
+using namespace std;
+
+const int MAXN = 10005;
+
+vector<int> adj[MAXN];
+int parent[MAXN], level[MAXN], low[MAXN];
+bool visited[MAXN], isArticulation[MAXN];
+
+void bfs(int u) {
+    queue<int> q;
+    q.push(u);
+    level[u] = 0;
+    visited[u] = true;
+
+    while (!q.empty()) {
+        int v = q.front();
+        q.pop();
+
+        for (int i = 0; i < adj[v].size(); i++) {
+            int w = adj[v][i];
+
+            if (!visited[w]) {
+                visited[w] = true;
+                level[w] = level[v] + 1;
+                parent[w] = v;
+                low[w] = level[w];
+                q.push(w);
+            }
+            else if (w != parent[v]) {
+                low[v] = min(low[v], level[w]);
+            }
+        }
+    }
+}
+
+void findArticulationPoints(int n) {
+    for (int i = 1; i <= n; i++) {
+        if (!visited[i]) {
+            bfs(i);
+        }
+    }
+
+    for (int i = 1; i <= n; i++) {
+        int cnt = 0;
+
+        for (int j = 0; j < adj[i].size(); j++) {
+            int v = adj[i][j];
+
+            if (parent[v] == i && low[v] >= level[i]) {
+                cnt++;
+            }
+        }
+
+        if (parent[i] == 0 && cnt > 1 || parent[i] != 0 && cnt > 0) {
+            isArticulation[i] = true;
+        }
+    }
+}
+
+int main() {
+    int n, m;
+
+    cin >> n >> m;
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+
+        cin >> u >> v;
+
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+
+    findArticulationPoints(n);
+
+    for (int i = 1; i <= n; i++) {
+        if (isArticulation[i]) {
+            cout << i << " ";
+        }
+    }
+
+    cout << endl;
+
+    return 0;
+}
