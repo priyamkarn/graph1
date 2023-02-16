@@ -1,3 +1,6 @@
+In summary, the calculation of indegrees of nodes is required for detecting a cycle in a directed graph using BFS because it allows us to identify
+when a node is part of a cycle by checking if it 
+has an indegree of zero but its neighbors have already been visited.
 bool isCyclic(int V, vector<int> adj[]) {
         // code here
         vector<int>indegree(V,0);
