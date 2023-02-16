@@ -1,0 +1,71 @@
+Kosaraju's algorithm is a popular algorithm for finding strongly connected components (SCCs) in a directed graph. One of the key steps in this algorithm is to perform
+a depth-first search (DFS) of the graph and keep track of the order in which the nodes are visited. 
+The DFS order is used to traverse the graph and find SCCs.
+
+To perform the DFS, Kosaraju's algorithm requires that the graph is in a specific order, which is defined by a topological sorting of the graph. 
+A topological sort of a directed acyclic graph (DAG) is a linear ordering of the nodes such that for every directed edge (u, v), node u comes before node v in 
+the ordering.
+
+The reason why a topological sorting is needed for Kosaraju's algorithm is that it ensures that the DFS order satisfies the condition that if there is a path 
+from node u to node v in the graph, then node v is visited before node u in the DFS. This property is crucial for finding SCCs because it ensures that when we 
+perform the second DFS on the transposed graph (i.e., the graph with all edges reversed), we will explore all nodes in a given SCC before moving on to nodes in
+other SCCs.
+
+Without a topological sort, it is possible to encounter a situation where a node in an SCC is visited after a node outside of that SCC,
+which would result in the algorithm failing to identify the SCC correctly.
+
+In summary, a topological sorting is needed for Kosaraju's algorithm because it ensures that the DFS order of the graph satisfies the required condition 
+for finding SCCs.
+void toposort(stack<int> &st,vector<int> &vis,vector<int> adj[],int S){
+	    vis[S] =1;
+	    
+	    for(auto it:adj[S]){
+	        if(!vis[it]){
+	            toposort(st,vis,adj,it);
+	        }
+	    }
+	    st.push(S);
+	}
+	//normal dfs code
+	void revDfs(int node,vector<int>&vis,vector<int>transpose[]){
+	    vis[node]=1;
+	    for(auto it:transpose[node]){
+	        if(!vis[it]){
+	            revDfs(it,vis,transpose);
+	        }
+	    }
+	}
+    int kosaraju(int V, vector<int> adj[])
+    {
+        //code here
+        vector<int>vis(V,0);
+        stack<int>st;
+        
+        for(int i = 0; i<V;i++){
+            if(vis[i]==false){
+                toposort(st,vis,adj,i);
+            }
+        }
+        //making a transpose of the graph(reversing the edges)
+        int count =0;
+        vector<int>transpose[V];
+        
+        for(int i =0;i<V;i++){
+            vis[i] =0;
+            for(auto it:adj[i]){
+                transpose[it].push_back(i);
+            }
+        }
+        
+        while(st.empty()==false){
+            int node = st.top();
+            st.pop();
+            
+            if(!vis[node]){
+                count++;
+                revDfs(node,vis,transpose);
+            }
+        }
+        return count;
+    }
+};
