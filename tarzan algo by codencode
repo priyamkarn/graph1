@@ -1,0 +1,60 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+#define MAXN 100005
+
+vector<int> adj[MAXN]; // adjacency list of the graph
+int disc[MAXN], low[MAXN], parent[MAXN], visited[MAXN];
+int bridge_count = 0; // count of bridges in the graph
+
+void tarjan_bridges(int u) {
+    static int time = 0;
+    disc[u] = low[u] = ++time; // set the discovery and low times of the node
+    visited[u] = true;
+
+    for(int i = 0; i < adj[u].size(); i++) {
+        int v = adj[u][i]; // v is a neighbor of u
+
+        if(!visited[v]) {
+            parent[v] = u; // set the parent of v to u
+            tarjan_bridges(v); // recursively visit v
+
+            low[u] = min(low[u], low[v]); // update the low time of u
+
+            // check if the edge u-v is a bridge
+            if(low[v] > disc[u]) {
+                bridge_count++;
+                cout << "Bridge found: (" << u << ", " << v << ")" << endl;
+            }
+        }
+        else if(v != parent[u]) {
+            low[u] = min(low[u], disc[v]); // update the low time of u
+        }
+    }
+}
+
+int main() {
+    int n, m; // n = number of nodes, m = number of edges
+    cin >> n >> m;
+
+    for(int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+
+        adj[u].push_back(v); // add edge u-v to the graph
+        adj[v].push_back(u); // add edge v-u to the graph
+    }
+
+    memset(visited, false, sizeof visited);
+    memset(parent, -1, sizeof parent);
+
+    for(int i = 1; i <= n; i++) {
+        if(!visited[i]) {
+            tarjan_bridges(i); // run Tarjan's Algorithm on each unvisited node
+        }
+    }
+
+    cout << "Number of bridges in the graph: " << bridge_count << endl;
+
+    return 0;
+}
