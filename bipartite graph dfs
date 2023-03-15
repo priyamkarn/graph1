@@ -1,25 +1,30 @@
-bool isBipartiteUtil(vector<int> adj[], int u, vector<int>& color) {
-    for(int v : adj[u]) {
-        if(color[v] == -1) { // If the adjacent node is not yet colored
-            color[v] = 1 - color[u]; // Assign opposite color to the adjacent node
-            if(!isBipartiteUtil(adj, v, color)) // Recursively check if the subgraph is bipartite
+bool dfs(int node, int c, vector<int> adj[], vector<int>& color, vector<bool>& visited) {
+    visited[node] = true;
+    color[node] = c;
+    for (int i = 0; i < adj[node].size(); i++) {
+        int neighbor = adj[node][i];
+        if (!visited[neighbor]) {
+            if (!dfs(neighbor, 1-c, adj, color, visited)) {
                 return false;
-        } else if(color[v] == color[u]) { // If the adjacent node has the same color as the current node
-            return false; // The graph is not bipartite
+            }
+        } else if (color[neighbor] == color[node]) {
+            return false;
         }
     }
-    return true; // The graph is bipartite
+    return true;
 }
 
-	bool isBipartite(int V, vector<int>adj[]){
-	    // Code here
-	vector<int> color(V, -1); // Initialize color of all nodes as -1 (unvisited)
-    for(int i = 0; i < V; i++) {
-        if(color[i] == -1) { // If the current node is not yet colored
-            color[i] = 1; // Assign color 1 to the current node
-            if(!isBipartiteUtil(adj, i, color)) // Recursively check if the subgraph is bipartite
-                return false;
+bool isBipartite(int V, vector<int> adj[]) {
+    vector<int> color(V, -1); // color of each node
+    vector<bool> visited(V, false); // visited array
+    bool is_bipartite = true;
+    for (int i = 0; i < V; i++) {
+        if (!visited[i]) {
+            if (!dfs(i, 0, adj, color, visited)) {
+                is_bipartite = false;
+                break;
+            }
         }
     }
-    return true; // The graph is bipartite
-	    
+    return is_bipartite;
+}
