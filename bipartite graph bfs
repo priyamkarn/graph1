@@ -1,34 +1,44 @@
-such that no two adjacent vertices have the same color
-
-bool checkBip(int src, vector<int> adj[], vector<int> &color){
-	    queue<int> q;
-	    
-	    color[src] = 1;
-	    q.push(src);
-	    
-	    while(!q.empty()){
-	       int node = q.front(), curColor = color[node];
-	       q.pop();
-	       for(int child : adj[node]){
-	           if(color[child] != -1){
-	               if(color[child] == curColor) return false;
-	           }
-	           else {
-	               color[child] = 1 - curColor;
-	               q.push(child);
-	           }
-	       }
+bool solve(int V,vector<int>adj[],vector<bool>&vis,vector<int>&color)
+{
+         queue<int>q;
+	     vis[V]=true;
+	     color[V]=0;
+	    q.push(V);
+	    while(!q.empty())
+	    {
+	        int node=q.front();
+	        q.pop();
+	        for(int i:adj[node])
+	        {
+	            if(!vis[i])
+	            {
+	                color[i]=1-color[node];\
+	                vis[i]=true;
+	                q.push(i);
+	            }
+	           else if(color[node]==color[i])
+	            {
+	                return false;
+	            }
+	        }
 	    }
-	    
 	    return true;
-    }
-public:
-	bool isBipartite(int V, vector<int> adj[]){
-	    vector<int> color(V, -1);
-	    for(int node = 0; node < V; node++){
-	        if(color[node] == -1 && !checkBip(node, adj, color)) return false;
-	    }
-	    
-	    return true;
+}
+	bool isBipartite(int V, vector<int>adj[]){
+	    // Code here
+	    vector<bool>vis(V,false);
+	     vector<int>color(V,-1);
+	    for(int i=0;i<V;i++)
+	    {
+	        if(!vis[i])
+	        {
+	            bool ans=solve(i,adj,vis,color);
+	            if(ans==false)
+	            {
+	                return false;
+	            }
+	        }
+	        
+	        }
+	        return true;
 	}
-};
